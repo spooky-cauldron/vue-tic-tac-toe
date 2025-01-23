@@ -23,7 +23,7 @@ const getSquareOwner = (row: number, col: number): string =>
   gameState.value[row][col];
 
 const isSquareSelectable = (row: number, col: number): boolean =>
-  getSquareOwner(row, col) !== "";
+  getSquareOwner(row, col) === "" && win.value.winner === "";
 
 const pickSquare = (row: number, col: number): void => {
   gameState.value[row][col] = currentPlayer.value;
@@ -81,7 +81,7 @@ const isWinningButton = (row: number, col: number): boolean => {
         <button
           class="board-btn"
           :class="[isWinningButton(rowIdx, colIdx) && 'win-btn']"
-          :disabled="isSquareSelectable(rowIdx, colIdx)"
+          :disabled="!isSquareSelectable(rowIdx, colIdx)"
           @click="pickSquare(rowIdx, colIdx)"
         >
           {{ getSquareOwner(rowIdx, colIdx) }}
@@ -110,11 +110,15 @@ h3 {
 }
 
 .board-btn:hover:enabled {
-  background-color: green;
+  background-color: rgb(0, 189, 129);
+}
+
+.board-btn:disabled {
+  color: black;
 }
 
 .win-btn:disabled {
-  background-color: yellow;
+  background-color: rgb(255, 252, 58);
 }
 
 @media (min-width: 1024px) {
