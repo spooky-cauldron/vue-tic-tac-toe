@@ -64,6 +64,12 @@ const checkWinner = (): WinData => {
 };
 
 const win = computed(checkWinner);
+
+const isWinningButton = (row: number, col: number): boolean => {
+  return win.value.squares.some(
+    ([winRow, winCol]) => winRow === row && winCol === col
+  );
+};
 </script>
 
 <template>
@@ -74,6 +80,7 @@ const win = computed(checkWinner);
       <td v-for="(item, colIdx) in row">
         <button
           class="board-btn"
+          :class="[isWinningButton(rowIdx, colIdx) && 'win-btn']"
           :disabled="isSquareSelectable(rowIdx, colIdx)"
           @click="pickSquare(rowIdx, colIdx)"
         >
@@ -104,6 +111,10 @@ h3 {
 
 .board-btn:hover:enabled {
   background-color: green;
+}
+
+.win-btn:disabled {
+  background-color: yellow;
 }
 
 @media (min-width: 1024px) {
