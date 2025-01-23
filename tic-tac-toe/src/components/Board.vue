@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { changePlayerKey, currentPlayerKey } from "@/keys";
+import { ref, inject, type Ref } from "vue";
 
 const gameState = ref([
   ["", "", ""],
@@ -7,7 +8,8 @@ const gameState = ref([
   ["", "", ""],
 ]);
 
-const currentPlayer = ref("X");
+const currentPlayer = inject(currentPlayerKey) as Ref<string>;
+const changePlayer = inject(changePlayerKey) as () => void;
 
 const getSquareOwner = (row: number, col: number): string =>
   gameState.value[row][col];
@@ -17,6 +19,7 @@ const isSquareSelectable = (row: number, col: number): boolean =>
 
 const pickSquare = (row: number, col: number) => {
   gameState.value[row][col] = currentPlayer.value;
+  changePlayer();
 };
 </script>
 

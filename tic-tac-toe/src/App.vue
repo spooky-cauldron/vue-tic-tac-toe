@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { ref, provide } from "vue";
 import Board from "./components/Board.vue";
+import { changePlayerKey, currentPlayerKey } from "./keys";
+
+const currentPlayer = ref("X");
+const changePlayer = () => {
+  currentPlayer.value = currentPlayer.value === "X" ? "O" : "X";
+};
+provide(currentPlayerKey, currentPlayer);
+provide(changePlayerKey, changePlayer);
 </script>
 
 <template>
