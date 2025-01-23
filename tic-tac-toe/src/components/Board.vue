@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { changePlayerKey, currentPlayerKey } from "@/keys";
-import { ref, inject, type Ref } from "vue";
+import { players } from "@/players";
+import { ref, inject, computed, type Ref } from "vue";
+
+type SquareID = [number, number]; // [rowIdx, colIdx]
+interface WinData {
+  winner: string;
+  squares: SquareID[];
+}
 
 const gameState = ref([
   ["", "", ""],
   ["", "", ""],
   ["", "", ""],
 ]);
+const boardSize = 3;
 
 const currentPlayer = inject(currentPlayerKey) as Ref<string>;
 const changePlayer = inject(changePlayerKey) as () => void;
@@ -17,14 +25,50 @@ const getSquareOwner = (row: number, col: number): string =>
 const isSquareSelectable = (row: number, col: number): boolean =>
   getSquareOwner(row, col) !== "";
 
-const pickSquare = (row: number, col: number) => {
+const pickSquare = (row: number, col: number): void => {
   gameState.value[row][col] = currentPlayer.value;
   changePlayer();
 };
+
+const checkWinner = (): WinData => {
+  const checks: SquareID[][] = [];
+
+  const diagonal1: SquareID[] = [];
+  const diagonal2: SquareID[] = [];
+  for (let i = 0; i < boardSize; i++) {
+    const row: SquareID[] = [];
+    const col: SquareID[] = [];
+    for (let j = 0; j < boardSize; j++) {
+      row.push([i, j]);
+      col.push([j, i]);
+    }
+    checks.push(row);
+    checks.push(col);
+    diagonal1.push([i, i]);
+    diagonal2.push([i, boardSize - 1 - i]);
+  }
+  checks.push(diagonal1);
+  checks.push(diagonal2);
+
+  for (const check of checks) {
+    for (const player of players) {
+      if (
+        check.filter(([row, col]) => gameState.value[row][col] === player)
+          .length >= boardSize
+      ) {
+        return { winner: player, squares: check };
+      }
+    }
+  }
+  return { winner: "", squares: [] };
+};
+
+const win = computed(checkWinner);
 </script>
 
 <template>
-  <h2>Player {{ currentPlayer }}</h2>
+  <h2 v-if="win.winner === ''">Player {{ currentPlayer }}</h2>
+  <h2 v-else>Winner: {{ win.winner }}</h2>
   <table>
     <tr v-for="(row, rowIdx) in gameState">
       <td v-for="(item, colIdx) in row">

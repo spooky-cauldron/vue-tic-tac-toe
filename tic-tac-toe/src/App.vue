@@ -2,10 +2,11 @@
 import { ref, provide } from "vue";
 import Board from "./components/Board.vue";
 import { changePlayerKey, currentPlayerKey } from "./keys";
+import { playerX, playerO, players } from "./players";
 
-const currentPlayer = ref("X");
+const currentPlayer = ref(players[0]);
 const changePlayer = () => {
-  currentPlayer.value = currentPlayer.value === "X" ? "O" : "X";
+  currentPlayer.value = currentPlayer.value === playerX ? playerO : playerX;
 };
 provide(currentPlayerKey, currentPlayer);
 provide(changePlayerKey, changePlayer);
